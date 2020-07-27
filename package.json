@@ -37,6 +37,7 @@
     ]
   },
   "dependencies": {
+    "@xg4/dingtalk-bot": "^0.0.4",
     "dotenv": "^8.2.0",
     "mongoose": "^5.9.25",
     "puppeteer-core": "^5.2.1",

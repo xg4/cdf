@@ -164,6 +164,13 @@
   dependencies:
     eslint-visitor-keys "^1.1.0"
 
+"@xg4/dingtalk-bot@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.npm.taobao.org/@xg4/dingtalk-bot/download/@xg4/dingtalk-bot-0.0.4.tgz#14e2641bd752d3d475c96be51dc918e33709a735"
+  integrity sha1-FOJkG9dS09R1yWvlHckY4zcJpzU=
+  dependencies:
+    node-fetch "^2.6.0"
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.npm.taobao.org/abbrev/download/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
@@ -1489,6 +1496,11 @@ natural-compare@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npm.taobao.org/natural-compare/download/natural-compare-1.4.0.tgz#4abebfeed7541f2c27acfb29bdbbd15c8d5ba4f7"
   integrity sha1-Sr6/7tdUHywnrPspvbvRXI1bpPc=
+
+node-fetch@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.npm.taobao.org/node-fetch/download/node-fetch-2.6.0.tgz?cache=0&sync_timestamp=1591866599252&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnode-fetch%2Fdownload%2Fnode-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha1-5jNFY4bUqlWGP2dqerDaqP3ssP0=
 
 nodemon@^2.0.4:
   version "2.0.4"
