@@ -7,7 +7,7 @@ export async function fetchHouses(pageNo: number, region = '00') {
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   })
   const page = await browser.newPage()
-  await page.goto(`${TARGET_URL}`)
+  await page.goto(TARGET_URL)
 
   const content = await page.evaluate(
     async (pageNo, region) => {

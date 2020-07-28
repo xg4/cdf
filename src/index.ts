@@ -1,8 +1,8 @@
-import { initDB } from './db'
-import { HouseModel, HouseDocument } from './models'
-import { fetchHouses } from './spider'
 import Bot from '@xg4/dingtalk-bot'
-import { WEBHOOK, SECRET } from './config'
+import { SECRET, WEBHOOK } from './config'
+import { initDB } from './db'
+import { HouseDocument, HouseModel } from './models'
+import { fetchHouses } from './spider'
 
 const bot = new Bot(WEBHOOK, SECRET)
 
@@ -18,22 +18,12 @@ function renderContent(house: HouseDocument) {
   ### 状态：  \n ${house.status}`
 }
 
-async function bootstrap(page = 12) {
+async function bootstrap(page = 1) {
   const db = await initDB()
 
   const list = await fetchHouses(page)
 
-  const dbList = await Promise.all(
-    list.map((item) => HouseModel.findOne({ uuid: item.uuid }))
-  )
-  const shouldTurnPage = dbList.every((item) => !item)
-  if (shouldTurnPage) {
-    setTimeout(() => {
-      bootstrap(page + 1)
-    }, 60 * 1e3)
-  }
-
-  await Promise.all(
+  const statusList = await Promise.all(
     list.map(async (item) => {
       const savedHouse = await HouseModel.findOne({
         uuid: item.uuid,
@@ -41,9 +31,14 @@ async function bootstrap(page = 12) {
       if (savedHouse) {
         if (savedHouse.status !== item.status) {
           savedHouse.status = item.status
-          // TODO: push status
           await savedHouse.save()
+          await bot.markdown({
+            title: `登记结束 - ${savedHouse.project}`,
+            text: renderContent(savedHouse),
+          })
+          return false
         }
+        return true
       } else {
         const house = new HouseModel(item)
         await house.save()
@@ -51,9 +46,18 @@ async function bootstrap(page = 12) {
           title: `新房源 - ${house.project}`,
           text: renderContent(house),
         })
+
+        return false
       }
     })
   )
+
+  const shouldTurnPage = statusList.every((s) => !s)
+  if (shouldTurnPage) {
+    setTimeout(() => {
+      bootstrap(page + 1)
+    }, 60 * 1e3)
+  }
 
   db.disconnect()
 }
