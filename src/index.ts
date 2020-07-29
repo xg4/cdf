@@ -24,6 +24,7 @@ async function bootstrap(page = 1) {
 
   console.log(page)
   const list = await fetchHouses(page)
+  console.log(list.map((item) => item.project).join(','))
 
   const statusList = await Promise.all(
     list.map(async (item) => {
