@@ -1,4 +1,5 @@
 import Bot from '@xg4/dingtalk-bot'
+import { CronJob } from 'cron'
 import { SECRET, WEBHOOK } from './config'
 import { initDB } from './db'
 import { HouseDocument, HouseModel } from './models'
@@ -21,6 +22,7 @@ function renderContent(house: HouseDocument) {
 async function bootstrap(page = 1) {
   const db = await initDB()
 
+  console.log(page)
   const list = await fetchHouses(page)
 
   const statusList = await Promise.all(
@@ -62,4 +64,6 @@ async function bootstrap(page = 1) {
   db.disconnect()
 }
 
-bootstrap()
+const job = new CronJob('0 * * * * *', bootstrap)
+
+job.start()

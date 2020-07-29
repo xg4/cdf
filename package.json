@@ -16,6 +16,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch src --ext ts --exec npm run serve",
+    "docker:build": "docker build -t cdf .",
+    "docker:dev": "docker-compose up -d",
     "lint": "eslint --fix src/**/*",
     "pretty": "prettier --write src/**/*",
     "serve": "ts-node --files --transpile-only ./src/index.ts",
@@ -38,6 +40,7 @@
   },
   "dependencies": {
     "@xg4/dingtalk-bot": "^0.0.4",
+    "cron": "^1.8.2",
     "dotenv": "^8.2.0",
     "mongoose": "^5.9.25",
     "puppeteer-core": "^5.2.1",
@@ -45,6 +48,7 @@
     "typescript": "^3.9.7"
   },
   "devDependencies": {
+    "@types/cron": "^1.7.2",
     "@types/mongoose": "^5.7.32",
     "@types/puppeteer-core": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^3.7.0",
