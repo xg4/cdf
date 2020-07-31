@@ -6,7 +6,7 @@ on:
     - cron: '0 * * * *'
 
 jobs:
-  check-in:
+  fetch:
     runs-on: ubuntu-latest
 
     steps:

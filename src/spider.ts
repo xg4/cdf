@@ -3,7 +3,6 @@ import { TARGET_URL } from './config'
 
 export async function fetchHouses(pageNo: number, region = '00') {
   const browser = await puppeteer.launch({
-    executablePath: '/usr/bin/chromium-browser',
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   })
   const page = await browser.newPage()
