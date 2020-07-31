@@ -47,14 +47,6 @@
   resolved "https://registry.npm.taobao.org/@types/color-name/download/@types/color-name-1.1.1.tgz#1c1261bbeaa10a8055bbc5d8ab84b7b2afc846a0"
   integrity sha1-HBJhu+qhCoBVu8XYq4S3sq/IRqA=
 
-"@types/cron@^1.7.2":
-  version "1.7.2"
-  resolved "https://registry.npm.taobao.org/@types/cron/download/@types/cron-1.7.2.tgz#e9fb420da616920dae82d13adfca53282ffaab6e"
-  integrity sha1-6ftCDaYWkg2ugtE638pTKC/6q24=
-  dependencies:
-    "@types/node" "*"
-    moment ">=2.14.0"
-
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npm.taobao.org/@types/eslint-visitor-keys/download/@types/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -91,14 +83,7 @@
   resolved "https://registry.npm.taobao.org/@types/parse-json/download/@types/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha1-L4u0QUNNFjs1+4/9zNcTiSf/uMA=
 
-"@types/puppeteer-core@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.npm.taobao.org/@types/puppeteer-core/download/@types/puppeteer-core-2.0.0.tgz#3b7fbbac53d56b566f5ef096116e1d60d504aa45"
-  integrity sha1-O3+7rFPVa1ZvXvCWEW4dYNUEqkU=
-  dependencies:
-    "@types/puppeteer" "*"
-
-"@types/puppeteer@*":
+"@types/puppeteer@^3.0.1":
   version "3.0.1"
   resolved "https://registry.npm.taobao.org/@types/puppeteer/download/@types/puppeteer-3.0.1.tgz#053ec20facc162b25a64785affccaa3e5817c607"
   integrity sha1-BT7CD6zBYrJaZHha/8yqPlgXxgc=
@@ -551,13 +536,6 @@ cosmiconfig@^6.0.0:
     parse-json "^5.0.0"
     path-type "^4.0.0"
     yaml "^1.7.2"
-
-cron@^1.8.2:
-  version "1.8.2"
-  resolved "https://registry.npm.taobao.org/cron/download/cron-1.8.2.tgz#4ac5e3c55ba8c163d84f3407bde94632da8370ce"
-  integrity sha1-SsXjxVuowWPYTzQHvelGMtqDcM4=
-  dependencies:
-    moment-timezone "^0.5.x"
 
 cross-spawn@^7.0.0, cross-spawn@^7.0.2:
   version "7.0.3"
@@ -1446,18 +1424,6 @@ mkdirp@^0.5.1:
   dependencies:
     minimist "^1.2.5"
 
-moment-timezone@^0.5.x:
-  version "0.5.31"
-  resolved "https://registry.npm.taobao.org/moment-timezone/download/moment-timezone-0.5.31.tgz#9c40d8c5026f0c7ab46eda3d63e49c155148de05"
-  integrity sha1-nEDYxQJvDHq0bto9Y+ScFVFI3gU=
-  dependencies:
-    moment ">= 2.9.0"
-
-"moment@>= 2.9.0", moment@>=2.14.0:
-  version "2.27.0"
-  resolved "https://registry.npm.taobao.org/moment/download/moment-2.27.0.tgz#8bff4e3e26a236220dfe3e36de756b6ebaa0105d"
-  integrity sha1-i/9OPiaiNiIN/j423nVrbrqgEF0=
-
 mongodb@3.5.9:
   version "3.5.9"
   resolved "https://registry.npm.taobao.org/mongodb/download/mongodb-3.5.9.tgz?cache=0&sync_timestamp=1591967740513&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fmongodb%2Fdownload%2Fmongodb-3.5.9.tgz#799b72be8110b7e71a882bb7ce0d84d05429f772"
@@ -1764,10 +1730,10 @@ pupa@^2.0.1:
   dependencies:
     escape-goat "^2.0.0"
 
-puppeteer-core@^5.2.1:
+puppeteer@^5.2.1:
   version "5.2.1"
-  resolved "https://registry.npm.taobao.org/puppeteer-core/download/puppeteer-core-5.2.1.tgz#0d21b5bbb30c82db9b439d255a459f3538cc7235"
-  integrity sha1-DSG1u7MMgtubQ50lWkWfNTjMcjU=
+  resolved "https://registry.npm.taobao.org/puppeteer/download/puppeteer-5.2.1.tgz#7f0564f0a5384f352a38c8cc42af875cd87f4ea6"
+  integrity sha1-fwVk8KU4TzUqOMjMQq+HXNh/TqY=
   dependencies:
     debug "^4.1.0"
     devtools-protocol "0.0.781568"

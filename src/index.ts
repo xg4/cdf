@@ -1,5 +1,4 @@
 import Bot from '@xg4/dingtalk-bot'
-import { CronJob } from 'cron'
 import { SECRET, WEBHOOK } from './config'
 import { initDB } from './db'
 import { HouseDocument, HouseModel } from './models'
@@ -65,6 +64,4 @@ async function bootstrap(page = 1) {
   db.disconnect()
 }
 
-const job = new CronJob('0 * * * * *', bootstrap)
-
-job.start()
+bootstrap()

@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer-core'
+import puppeteer from 'puppeteer'
 import { TARGET_URL } from './config'
 
 export async function fetchHouses(pageNo: number, region = '00') {
