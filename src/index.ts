@@ -77,4 +77,7 @@ async function bootstrap(page = 1) {
   db.disconnect()
 }
 
-bootstrap()
+bootstrap().catch((err) => {
+  console.error(err)
+  process.exit(1)
+})
