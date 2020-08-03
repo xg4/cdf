@@ -34,23 +34,10 @@ async function bootstrap(page = 1) {
         if (savedHouse.status !== item.status) {
           savedHouse.status = item.status
           await savedHouse.save()
-          if (savedHouse.status === '正在报名') {
-            await bot.markdown({
-              title: `登记中 - ${savedHouse.project}`,
-              text: renderContent(savedHouse),
-            })
-          } else if (savedHouse.status === '报名结束') {
-            await bot.markdown({
-              title: `登记结束 - ${savedHouse.project}`,
-              text: renderContent(savedHouse),
-            })
-          } else {
-            await bot.markdown({
-              title: savedHouse.project,
-              text: renderContent(savedHouse),
-            })
-          }
-
+          await bot.markdown({
+            title: `${savedHouse.status} - ${savedHouse.project}`,
+            text: renderContent(savedHouse),
+          })
           return false
         }
         return true
@@ -77,7 +64,11 @@ async function bootstrap(page = 1) {
   db.disconnect()
 }
 
-bootstrap().catch((err) => {
+bootstrap().catch((err: Error) => {
   console.error(err)
-  process.exit(1)
+  if (err.message.includes('Navigation timeout')) {
+    process.exit()
+  } else {
+    process.exit(1)
+  }
 })
