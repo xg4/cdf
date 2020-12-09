@@ -1,0 +1,38 @@
+name: schedule
+
+on:
+  schedule:
+    - cron: '* * * * *'
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    env:
+      TZ: Asia/Shanghai
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+
+      - name: Install
+        run: yarn
+
+      - name: Spider
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git pull --rebase
+          npm run serve
+          git add .
+          git commit -m "chore: update data by github action"
+          git push
+        env:
+          WEBHOOK: ${{ secrets.WEBHOOK }}
+          SECRET: ${{ secrets.SECRET }}
