@@ -1,7 +1,11 @@
+import Bot from '@xg4/dingtalk-bot'
 import retry from 'async-retry'
 import { format, parseISO } from 'date-fns'
+import { SECRET, WEBHOOK } from './config'
 import spider from './spider'
-import { diffFile, getFullPath, sleep } from './util'
+import { diffFile, getFullPath, renderContent, sleep } from './util'
+
+const bot = new Bot(WEBHOOK, SECRET)
 
 async function task(page = 1) {
   const trList = await spider(page)
@@ -26,17 +30,31 @@ async function task(page = 1) {
     )
   )
 
-  let len = 0
-  diffArr.forEach((diffList) => (len += diffList.length))
+  let diffLength = 0
 
-  if (!len) {
+  await Promise.all(
+    diffArr.map(async (diffList) => {
+      diffLength += diffList.length
+      await Promise.all(
+        diffList.map((tdList) => {
+          const [title, text] = renderContent(tdList)
+          return bot.markdown({
+            title,
+            text,
+          })
+        })
+      )
+    })
+  )
+
+  if (!diffLength) {
     console.log('Everything up-to-date')
     return
   }
 
-  console.log('Diff length', len)
+  console.log('Diff length', diffLength)
 
-  if (len === trList.length) {
+  if (diffLength === trList.length) {
     console.log('Next page', page + 1)
     await sleep(10 * 1e3)
     await task(page + 1)

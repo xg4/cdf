@@ -12,11 +12,11 @@ export default async function spider(pageNo: number) {
   const $ = cheerio.load(result)
 
   const trList: string[][] = []
-  $('#_projectInfo > tr').each((_, tr): void => {
+  $('#_projectInfo > tr').each((_, tr) => {
     const tdList: string[] = []
     $(tr)
       .find('td')
-      .each((_, td): void => {
+      .each((_, td) => {
         tdList.push($(td).text())
       })
 
