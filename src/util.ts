@@ -1,13 +1,12 @@
 import { F_OK } from 'constants'
-import { format } from 'date-fns'
-import { access } from 'fs/promises'
+import { access, readFile, writeFile } from 'fs/promises'
 import { join } from 'path'
 
-export function getFullPath(date: Date) {
-  return join(__dirname, `../archives/${format(date, 'yyyy-MM-dd')}.txt`)
+export function getFullPath(filename: string) {
+  return join(__dirname, `../archives/${filename}.txt`)
 }
 
-export function diffSource(source: string, trList: string[][]) {
+export function diffContent(source: string, trList: string[][]) {
   return trList
     .map((tdList) => {
       const str = tdList.join(' | ')
@@ -26,6 +25,23 @@ export async function exists(path: string) {
   } catch {
     return false
   }
+}
+
+export async function diffFile(fullPath: string, trList: string[][]) {
+  let source = ''
+  if (await exists(fullPath)) {
+    const fileText = await readFile(fullPath)
+    const decoder = new TextDecoder()
+    source = decoder.decode(fileText)
+  }
+
+  const diffList = diffContent(source, trList)
+
+  const diffStr = diffList.map((td) => td.join(' | ')).join('\n')
+  const newSource = diffStr + '\n' + source
+  await writeFile(fullPath, newSource)
+
+  return diffList
 }
 
 export function renderContent([
