@@ -31,7 +31,10 @@ jobs:
           WEBHOOK: ${{ secrets.WEBHOOK }}
           SECRET: ${{ secrets.SECRET }}
 
-      - name: Push
+      - name: Check changes
+        run: git status
+
+      - name: Push commit
         run: |
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
