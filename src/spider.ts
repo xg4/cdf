@@ -1,7 +1,7 @@
 import cheerio from 'cheerio'
 import fetch from 'node-fetch'
 
-export default async function spider(pageNo = 1) {
+export default async function spider(pageNo: number) {
   const result = await fetch(
     `https://zw.cdzj.chengdu.gov.cn/lottery/accept/projectList?pageNo=${pageNo}`,
     {

@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns'
 import spider from './spider'
 import { diffFile, getFullPath, sleep } from './util'
 
-async function task(_: (e: Error) => void, page = 1) {
+async function task(page = 1) {
   const trList = await spider(page)
 
   const pathMap: Record<string, string[][]> = {}
@@ -37,12 +37,12 @@ async function task(_: (e: Error) => void, page = 1) {
   console.log('Diff length', len)
 
   if (len === trList.length) {
-    console.log('Next page')
-    await sleep(30 * 1e3)
-    await task(_, page + 1)
+    console.log('Next page', page + 1)
+    await sleep(10 * 1e3)
+    await task(page + 1)
   }
 }
 
-retry(task, {
+retry(() => task(), {
   retries: 3,
 })
