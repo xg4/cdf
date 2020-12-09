@@ -1,74 +1,40 @@
-import Bot from '@xg4/dingtalk-bot'
-import { SECRET, WEBHOOK } from './config'
-import { initDB } from './db'
-import { HouseDocument, HouseModel } from './models'
-import { fetchHouses } from './spider'
+import retry from 'async-retry'
+import { readFile, writeFile } from 'fs/promises'
+import spider from './spider'
+import { diffSource, exists, getFullPath, sleep } from './util'
 
-const bot = new Bot(WEBHOOK, SECRET)
+async function task(boil: (e: Error) => void, page = 1) {
+  const trList = await spider(page)
 
-function renderContent(house: HouseDocument) {
-  return `
-  ### 区域  \n ${house.region}  \n
-  ### 项目名称  \n ${house.project}  \n
-  ### 预售范围  \n ${house.range}  \n
-  ### 住房套数  \n ${house.quantity}  \n
-  ### 开发商咨询电话  \n ${house.phone}  \n
-  ### 登记开始时间：  \n ${house.start}  \n
-  ### 登记结束时间：  \n ${house.end}  \n
-  ### 状态：  \n ${house.status}`
-}
+  const fullPath = getFullPath(new Date())
 
-async function bootstrap(page = 1) {
-  const db = await initDB()
-
-  console.log(page)
-  const list = await fetchHouses(page)
-  console.log(list.map((item) => item.project).join(','))
-
-  const statusList = await Promise.all(
-    list.map(async (item) => {
-      const savedHouse = await HouseModel.findOne({
-        uuid: item.uuid,
-      })
-      if (savedHouse) {
-        if (savedHouse.status !== item.status) {
-          savedHouse.status = item.status
-          await savedHouse.save()
-          await bot.markdown({
-            title: `${savedHouse.status} - ${savedHouse.project}`,
-            text: renderContent(savedHouse),
-          })
-          return false
-        }
-        return true
-      } else {
-        const house = new HouseModel(item)
-        await house.save()
-        await bot.markdown({
-          title: `新房源 - ${house.project}`,
-          text: renderContent(house),
-        })
-
-        return false
-      }
-    })
-  )
-
-  const shouldTurnPage = statusList.every((s) => !s)
-  if (shouldTurnPage) {
-    setTimeout(() => {
-      bootstrap(page + 1)
-    }, 60 * 1e3)
+  let source = ''
+  if (await exists(fullPath)) {
+    const fileText = await readFile(fullPath)
+    const decoder = new TextDecoder()
+    source = decoder.decode(fileText)
   }
 
-  db.disconnect()
+  const diffList = diffSource(source, trList)
+
+  if (!diffList.length) {
+    console.log('Everything up-to-date')
+    return
+  }
+
+  console.log('Diff length', diffList.length)
+
+  const diffStr = diffList.map((td) => td.join(' | ')).join('\n')
+  const newSource = diffStr + '\n' + source
+  await writeFile(fullPath, newSource)
+
+  if (diffList.length === trList.length) {
+    console.log('Next page')
+    await sleep(30 * 1e3)
+    await task(boil, page + 1)
+  }
 }
 
-bootstrap().catch((err: Error) => {
-  console.error(err)
-  if (err.message.includes('Navigation timeout')) {
-    process.exit()
-  } else {
-    process.exit(1)
-  }
+retry(task, {
+  retries: 3,
 })

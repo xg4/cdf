@@ -1,50 +1,27 @@
-import puppeteer from 'puppeteer'
-import { TARGET_URL } from './config'
+import cheerio from 'cheerio'
+import fetch from 'node-fetch'
 
-export async function fetchHouses(pageNo: number, region = '00') {
-  const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+export default async function spider(pageNo = 1) {
+  const result = await fetch(
+    `https://zw.cdzj.chengdu.gov.cn/lottery/accept/projectList?pageNo=${pageNo}`,
+    {
+      method: 'post',
+    }
+  ).then((res) => res.text())
+
+  const $ = cheerio.load(result)
+
+  const trList: string[][] = []
+  $('#_projectInfo > tr').each((_, tr): void => {
+    const tdList: string[] = []
+    $(tr)
+      .find('td')
+      .each((_, td): void => {
+        tdList.push($(td).text())
+      })
+
+    trList.push(tdList)
   })
-  const page = await browser.newPage()
-  await page.goto(TARGET_URL)
 
-  const content = await page.evaluate(
-    async (pageNo, region) => {
-      const buf = await fetch('/lottery/accept/projectList', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: `pageNo=${pageNo}&regioncode=${region}`,
-      }).then((res) => res.arrayBuffer())
-      const decoder = new TextDecoder()
-      const bodyStr = decoder.decode(buf)
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(bodyStr, 'text/html')
-      const tableEl = doc.querySelector('#_projectInfo')
-      return Array.from(tableEl ? tableEl.querySelectorAll('tr') : []).map(
-        (trEl) => {
-          const tdEls = Array.from(trEl.querySelectorAll('td'))
-          return {
-            uuid: tdEls[0].textContent as string,
-            region: tdEls[2].textContent as string,
-            project: tdEls[3].textContent as string,
-            license_number: tdEls[4].textContent as string,
-            range: tdEls[5].textContent as string,
-            quantity: tdEls[6].textContent as string,
-            phone: tdEls[7].textContent as string,
-            start: tdEls[8].textContent as string,
-            end: tdEls[9].textContent as string,
-            status: tdEls[11].textContent as string,
-          }
-        }
-      )
-    },
-    pageNo,
-    region
-  )
-
-  await browser.close()
-
-  return content
+  return trList
 }
