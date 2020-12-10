@@ -36,7 +36,7 @@ async function getFileContent(fullPath: string) {
 }
 
 export function getFullPath(filename: string) {
-  return join(__dirname, `../archives/${filename}.txt`)
+  return join(__dirname, `../../archives/${filename}.txt`)
 }
 
 export function diffContent(source: string, trList: string[][]) {
