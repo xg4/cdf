@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ -n "$(git diff --exit-code)" ]; then
+if [ -n "$(git status --porcelain)" ]; then
   echo "there are changes";
   git config user.name github-actions[bot]
   git config user.email github-actions[bot]@users.noreply.github.com
@@ -9,5 +9,4 @@ if [ -n "$(git diff --exit-code)" ]; then
   git push
 else
   echo "no changes";
-  exit 0
 fi
