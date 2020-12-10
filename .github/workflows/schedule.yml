@@ -32,4 +32,4 @@ jobs:
           SECRET: ${{ secrets.SECRET }}
 
       - name: Push commit
-        run: chmod +x ./git-status.sh && ./git-status.sh
+        run: chmod +x ./git-diff.sh && ./git-diff.sh
