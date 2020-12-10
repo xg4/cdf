@@ -32,10 +32,4 @@ jobs:
           SECRET: ${{ secrets.SECRET }}
 
       - name: Push commit
-        run: |
-          chmod +x ./git-status.sh && ./git-status.sh
-          git config user.name github-actions[bot]
-          git config user.email github-actions[bot]@users.noreply.github.com
-          git add .
-          git commit -m "chore: update data source"
-          git push
+        run: chmod +x ./git-status.sh && ./git-status.sh
