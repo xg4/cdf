@@ -2,7 +2,7 @@ name: schedule
 
 on:
   schedule:
-    - cron: '* * * * *'
+    - cron: '*/5 * * * *'
 
 jobs:
   fetch:
@@ -31,11 +31,9 @@ jobs:
           WEBHOOK: ${{ secrets.WEBHOOK }}
           SECRET: ${{ secrets.SECRET }}
 
-      - name: Check changes
-        run: chmod +x ./git-status.sh && ./git-status.sh
-
       - name: Push commit
         run: |
+          chmod +x ./git-status.sh && ./git-status.sh
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
           git add .
