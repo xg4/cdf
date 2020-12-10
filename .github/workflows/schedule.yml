@@ -32,7 +32,7 @@ jobs:
           SECRET: ${{ secrets.SECRET }}
 
       - name: Check changes
-        run: git status
+        run: chmod +x ./git-status.sh && ./git-status.sh
 
       - name: Push commit
         run: |
