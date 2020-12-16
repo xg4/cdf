@@ -1,61 +1,55 @@
 import Bot from '@xg4/dingtalk-bot'
 import retry from 'async-retry'
-import { format, parseISO } from 'date-fns'
 import { SECRET, WEBHOOK } from './config'
+import { initDB } from './db'
+import House from './models/house'
 import spider from './spider'
-import { diffFile, getFullPath, renderContent, sleep } from './util'
+import { filterData, renderContent, sleep } from './util'
 
 const bot = new Bot(WEBHOOK, SECRET)
 
 async function task(page = 1) {
-  const trList = await spider(page)
+  await initDB()
 
-  const pathMap: Record<string, string[][]> = {}
+  const dataSource = await spider(page)
 
-  trList.forEach((tdList) => {
-    const date = tdList[8]
-    const filename = format(parseISO(date), 'yyyy-MM-dd')
-    const fullPath = getFullPath(filename)
-    const current = pathMap[fullPath]
-    if (current) {
-      current.push(tdList)
-    } else {
-      pathMap[fullPath] = [tdList]
-    }
-  })
-
-  const diffArr = await Promise.all(
-    Object.entries(pathMap).map(([fullPath, trList]) =>
-      diffFile(fullPath, trList)
-    )
-  )
-
-  let diffLength = 0
-
-  await Promise.all(
-    diffArr.map(async (diffList) => {
-      diffLength += diffList.length
-      await Promise.all(
-        diffList.map((tdList) => {
-          const [title, text] = renderContent(tdList)
-          return bot.markdown({
-            title,
-            text,
-          })
-        })
-      )
+  const _diffList = await Promise.all(
+    dataSource.map(filterData).map(async (item) => {
+      const house = await House.findOne({
+        where: {
+          uuid: item.uuid,
+        },
+      })
+      if (!house) {
+        const _h = await House.create(item)
+        console.log('creat ', item.name, item.status)
+        return _h
+      }
+      if (house.status == item.status) {
+        console.log('existed ', item.name, item.status)
+        return
+      }
+      house.status = item.status
+      await house.save()
+      console.log('change ', item.name, item.status)
+      return house
     })
   )
 
-  if (!diffLength) {
-    console.log('Everything up-to-date')
-    return
-  }
+  const diffList = _diffList.filter(Boolean) as House[]
 
-  console.log('Diff length', diffLength)
+  await Promise.all(
+    diffList.map((item) => {
+      const [title, text] = renderContent(item)
+      return bot.markdown({
+        title,
+        text,
+      })
+    })
+  )
 
-  if (diffLength === trList.length) {
-    console.log('Next page', page + 1)
+  if (diffList.length === dataSource.length) {
+    console.log('Next ', page + 1)
     await sleep(10 * 1e3)
     await task(page + 1)
   }
