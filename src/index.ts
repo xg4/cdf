@@ -4,11 +4,13 @@ import { SECRET, WEBHOOK } from './config'
 import { initDB } from './db'
 import House from './models/house'
 import spider from './spider'
-import { filterData, renderContent, sleep } from './util'
+import { composeContent, filterData, sleep } from './util'
 
 const bot = new Bot(WEBHOOK, SECRET)
 
-async function task(page = 1) {
+let page = 1
+
+async function task() {
   await initDB()
 
   const dataSource = await spider(page)
@@ -40,7 +42,7 @@ async function task(page = 1) {
 
   await Promise.all(
     diffList.map((item) => {
-      const [title, text] = renderContent(item)
+      const [title, text] = composeContent(item)
       return bot.markdown({
         title,
         text,
@@ -48,13 +50,14 @@ async function task(page = 1) {
     })
   )
 
-  if (diffList.length === dataSource.length) {
-    console.log('Next ', page + 1)
-    await sleep(10 * 1e3)
-    await task(page + 1)
+  if (diffList.length || page < 10) {
+    page += 1
+    console.log('Next ', page)
+    await sleep(5 * 1e3)
+    await task()
   }
 }
 
-retry(() => task(), {
+retry(task, {
   retries: 3,
 })

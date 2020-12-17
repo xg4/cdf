@@ -4,7 +4,7 @@ import House from '../models/house'
 export const sleep = (delay: number) =>
   new Promise((resolve) => setTimeout(resolve, delay))
 
-export function renderContent({
+export function composeContent({
   region,
   name,
   details,
@@ -22,8 +22,8 @@ export function renderContent({
 ### 预售范围  \n${details}  \n
 ### 住房套数  \n${number}  \n
 ### 开发商咨询电话  \n${phoneNumber}  \n
-### 登记开始时间：  \n${dayjs(startsAt).format('YYYY-MM-DD hh:mm:ss')}  \n
-### 登记结束时间：  \n${dayjs(endsAt).format('YYYY-MM-DD hh:mm:ss')}  \n
+### 登记开始时间：  \n${dayjs.unix(startsAt).format('YYYY-MM-DD hh:mm:ss')}  \n
+### 登记结束时间：  \n${dayjs.unix(endsAt).format('YYYY-MM-DD hh:mm:ss')}  \n
 ### 状态：  \n${status}
 `.trim(),
   ]
