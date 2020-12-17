@@ -1,15 +1,16 @@
 import { join } from 'path'
-import { Sequelize } from 'sequelize'
+import 'reflect-metadata'
+import { createConnection } from 'typeorm'
+import House from './models/house'
 
 const dbPath = join(__dirname, '../data/db.sqlite3')
 
-export const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: dbPath,
-  logging: false,
-})
-
 export async function initDB() {
-  await sequelize.authenticate()
-  await sequelize.sync()
+  await createConnection({
+    type: 'sqlite',
+    database: dbPath,
+    synchronize: true,
+    // logging: false,
+    entities: [House],
+  })
 }

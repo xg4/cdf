@@ -1,43 +1,36 @@
-import { DataTypes, Model } from 'sequelize'
-import { sequelize } from '../db'
+import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm'
 
-class House extends Model {
-  public uuid!: string
-  public region!: string
-  public name!: string
+@Entity('Houses')
+class House extends BaseEntity {
+  @PrimaryColumn()
+  uuid!: string
 
-  public licenseNumber!: string
-  public details!: string
-  public number!: string
-  public phoneNumber!: string
-  public startsAt!: number
-  public endsAt!: number
-  public status!: string
+  @Column()
+  region!: string
 
-  public readonly createdAt!: Date
-  public readonly updatedAt!: Date
+  @Column()
+  name!: string
+
+  @Column()
+  licenseNumber!: string
+
+  @Column()
+  details!: string
+
+  @Column()
+  number!: string
+
+  @Column()
+  phoneNumber!: string
+
+  @Column()
+  startsAt!: number
+
+  @Column()
+  endsAt!: number
+
+  @Column()
+  status!: string
 }
-
-House.init(
-  {
-    uuid: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-    },
-    region: DataTypes.TEXT,
-    name: DataTypes.TEXT,
-    licenseNumber: DataTypes.TEXT,
-    details: DataTypes.TEXT,
-    number: DataTypes.TEXT,
-    phoneNumber: DataTypes.TEXT,
-    startsAt: DataTypes.INTEGER,
-    endsAt: DataTypes.INTEGER,
-    status: DataTypes.TEXT,
-  },
-  {
-    sequelize,
-    timestamps: false,
-  }
-)
 
 export default House

@@ -4,26 +4,24 @@ import { SECRET, WEBHOOK } from './config'
 import { initDB } from './db'
 import House from './models/house'
 import spider from './spider'
-import { composeContent, filterData, sleep } from './util'
+import { composeContent, filterData } from './util'
 
 const bot = new Bot(WEBHOOK, SECRET)
 
 let page = 1
 
 async function task() {
-  await initDB()
-
+  console.log('Page ', page)
   const dataSource = await spider(page)
 
   const _diffList = await Promise.all(
     dataSource.map(filterData).map(async (item) => {
       const house = await House.findOne({
-        where: {
-          uuid: item.uuid,
-        },
+        uuid: item.uuid,
       })
       if (!house) {
-        const _h = await House.create(item)
+        const _h = House.create(item)
+        await _h.save()
         console.log('creat ', item.name, item.status)
         return _h
       }
@@ -53,11 +51,16 @@ async function task() {
   if (diffList.length || page < 10) {
     page += 1
     console.log('Next ', page)
-    await sleep(5 * 1e3)
     await task()
   }
 }
 
-retry(task, {
-  retries: 3,
-})
+retry(
+  async () => {
+    await initDB()
+    await task()
+  },
+  {
+    retries: 3,
+  }
+)
