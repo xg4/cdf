@@ -1,12 +1,13 @@
-import Bot from '@xg4/dingtalk-bot'
+import { House } from '@prisma/client'
 import retry from 'async-retry'
-import { SECRET, WEBHOOK } from './config'
-import { initDB } from './db'
-import House from './models/house'
+import dayjs from 'dayjs'
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
 import spider from './spider'
-import { composeContent, filterData } from './util'
+import { composeContent, diffHouses, filterData } from './util'
 
-const bot = new Bot(WEBHOOK, SECRET)
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 let page = 1
 
@@ -15,25 +16,7 @@ async function task() {
   const dataSource = await spider(page)
 
   const _diffList = await Promise.all(
-    dataSource.map(filterData).map(async (item) => {
-      const house = await House.findOne({
-        uuid: item.uuid,
-      })
-      if (!house) {
-        const _h = House.create(item)
-        await _h.save()
-        console.log('creat ', item.name, item.status)
-        return _h
-      }
-      if (house.status == item.status) {
-        console.log('existed ', item.name, item.status)
-        return
-      }
-      house.status = item.status
-      await house.save()
-      console.log('change ', item.name, item.status)
-      return house
-    })
+    dataSource.map(filterData).map(diffHouses)
   )
 
   const diffList = _diffList.filter(Boolean) as House[]
@@ -41,10 +24,7 @@ async function task() {
   await Promise.all(
     diffList.map((item) => {
       const [title, text] = composeContent(item)
-      return bot.markdown({
-        title,
-        text,
-      })
+      // TODO: push message
     })
   )
 
@@ -55,12 +35,6 @@ async function task() {
   }
 }
 
-retry(
-  async () => {
-    await initDB()
-    await task()
-  },
-  {
-    retries: 3,
-  }
-)
+retry(task, {
+  retries: 3,
+})
