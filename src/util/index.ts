@@ -41,6 +41,8 @@ export function filterData([
   startsAt,
   endsAt,
   ___,
+  ____,
+  _____,
   status,
 ]: string[]) {
   return {
