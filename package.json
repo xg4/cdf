@@ -17,7 +17,6 @@
     "dev": "nodemon --watch src --ext ts --exec npm run serve",
     "docker:build": "docker build -t cdf .",
     "docker:dev": "docker-compose up -d",
-    "lint": "eslint --fix src/**/*",
     "fmt": "prettier --write src/**/*",
     "serve": "ts-node ./src/index.ts",
     "start": "pm2 start ts-node -- --files --transpile-only ./src/index.ts"

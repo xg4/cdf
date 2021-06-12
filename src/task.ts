@@ -1,18 +1,15 @@
-import { House, PrismaClient } from '@prisma/client'
+import { House } from '@prisma/client'
 import dayjs from 'dayjs'
+import { prisma } from './prisma'
 import { pull } from './spider'
-
-const prisma = new PrismaClient()
-
-let page = 1
 
 const debug = require('debug')('db:house')
 
-export async function task() {
-  const dataSource = await pull(page)
+export async function task(page = 1) {
+  const houses = await pull(page)
 
   const _diffList = await Promise.all(
-    dataSource.map(async (house) => {
+    houses.map(async (house) => {
       const savedHouse = await prisma.house.findUnique({
         where: { uuid: house.uuid },
       })
@@ -35,17 +32,23 @@ export async function task() {
 
   const diffList = _diffList.filter(Boolean) as House[]
 
-  await Promise.all(
-    diffList.map((item) => {
-      const [title, text] = composeContent(item)
-      // TODO: push message
-    })
+  await pushHouses(diffList)
+
+  const isContinue = houses.every(
+    (h) => dayjs().diff(h.startedAt, 'month') <= 0
   )
 
-  if (diffList.length || page < 15) {
-    page += 1
-    await task()
+  if (isContinue) {
+    await task(page + 1)
   }
+}
+
+async function pushHouses(houses: House[]) {
+  await Promise.all(
+    houses.map((item) => {
+      const [title, text] = composeContent(item)
+    })
+  )
 }
 
 function composeContent({
